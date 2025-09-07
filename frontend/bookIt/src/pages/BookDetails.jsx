@@ -5,7 +5,7 @@ import Footer from "../components/Footer";
 import { getBookById } from "../service/BooksService";
 import { loadProfile } from "../service/AuthService";
 import EditBook from "../components/EditBook";
-import paymentQR from "../assets/react.svg";
+import paymentQR from "../assets/qr.png";
 import { checkBookOwnership } from "../service/BooksService";
 import { postPurchase } from "../service/OrdersService";
 
@@ -49,13 +49,13 @@ export default function BookDetails() {
   const handleBuy = async () => {
     try {
       await postPurchase({
-        book: Number(id), // only send the book id
+        book: Number(id),
       });
-      alert("✅ Purchase successful!");
+      alert("Purchase successful!");
       setIsBuyOpen(false);
-      setOwnsBook(true); // mark ownership after purchase
+      setOwnsBook(true); 
     } catch (err) {
-      alert("❌ Failed to store purchase.");
+      alert("Failed to store purchase.");
     }
   };
 
@@ -106,7 +106,6 @@ export default function BookDetails() {
         )}
         {book && (
           <div className="bg-white shadow-lg rounded-2xl p-6 flex flex-col md:flex-row gap-6">
-            {/* Left Side - Image */}
             <div className="flex-shrink-0 w-full md:w-1/3 h-140 bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center">
               {book.cover_image_url ? (
                 <img
@@ -119,7 +118,6 @@ export default function BookDetails() {
               )}
             </div>
 
-            {/* Right Side - Book Info */}
             <div className="flex-1 space-y-3">
               <h1 className="text-2xl font-bold text-gray-800">{book.title}</h1>
               <p className="text-gray-600 text-lg">by {book.author}</p>
@@ -135,7 +133,6 @@ export default function BookDetails() {
         )}
       </div>
 
-      {/* Buy Modal */}
       {isBuyOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-transparent z-50">
           <div className="bg-white rounded-2xl shadow-lg p-6 w-[350px] text-center border border-gray-200">
@@ -163,7 +160,6 @@ export default function BookDetails() {
         </div>
       )}
 
-      {/* Edit Modal */}
       <EditBook
         bookId={id}
         isOpen={isEditOpen}

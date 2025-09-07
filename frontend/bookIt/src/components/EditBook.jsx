@@ -23,7 +23,7 @@ export default function EditBook({ bookId, isOpen, onClose, onSave }) {
       updatedForm.description !== book.description ||
       String(updatedForm.price) !== String(book.price) ||
       updatedForm.stored_at !== book.stored_at ||
-      updatedForm.cover_image !== null // file selected
+      updatedForm.cover_image !== null
     );
   };
 

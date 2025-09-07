@@ -60,13 +60,12 @@ export default function Loggin() {
               placeholder="Password"
               required
             />
-            {/* 👁 Eye button */}
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-9 text-gray-500"
             >
-              {showPassword ? "🙈" : "👁️"}
+              {showPassword ? "🙈" : "👁"}
             </button>
           </div>
 

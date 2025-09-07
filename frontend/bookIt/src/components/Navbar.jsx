@@ -12,12 +12,10 @@ export default function Navbar() {
 
   return (
     <nav className=" bg-white shadow-md px-6 py-3 flex justify-between items-center">
-      {/* Logo / Brand */}
       <NavLink to="/landing" className="text-2xl font-bold text-blue-600">
         BookIt 📚
       </NavLink>
 
-      {/* Links */}
       <div className="space-x-6 flex items-center">
         <NavLink
           to="/landing"

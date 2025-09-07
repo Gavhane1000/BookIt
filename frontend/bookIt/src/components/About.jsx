@@ -29,7 +29,6 @@ export default function About() {
         </div>
       </div>
 
-      {/* Image Section */}
       <div className="image mt-10 md:mt-0">
         <img
           className="pan-image w-80 md:w-[28rem] drop-shadow-lg"
