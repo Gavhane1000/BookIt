@@ -38,21 +38,30 @@ BookIt/
 2. **Configure PostgreSQL:** 
     backend/bookIt/bookIt/settings.py.
 3. **Run migrations:**
+    ```sh
     python manage.py migrate
+    ```
 4. **Start the server:**
+    ```sh
     python manage.py runserver
+    ```
 
 ### Frontend (React)
 
 1. **Install dependencies:**
+    ```sh
     npm install
+    ```
 2. **Start the development server:**
+    ```sh
     npm run dev
+    ```
 
 ## Usage
     Login with your credentials.
     Browse books, view details, and purchase.
     Admins can edit book details and upload cover images.
+
 ## Tech Stack
     Frontend: React, Vite, Tailwind CSS
     Backend: Django, Django REST Framework, JWT
