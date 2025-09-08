@@ -9,6 +9,8 @@ urlpatterns = [
     path("auth/me/", MeView.as_view(), name="me"),
     # Book routes
     path("books/", BookListCreateView.as_view(), name="book-list"),
+    path("books/my", MyBookListView.as_view(), name="my-book-list"),
+    
     path("books/<int:pk>/", BookDetailView.as_view(), name="book-detail"), 
     # Trending and Recommended
     path("books/trending/", TrendingBooksView.as_view(), name="trending-books"),

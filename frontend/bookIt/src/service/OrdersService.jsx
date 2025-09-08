@@ -7,7 +7,10 @@ const getAuthHeader = () => {
 
 export const postPurchase = async ( data ) => {
   try {
-    const headers = {...getAuthHeader(),}
+    const headers = {
+      ...getAuthHeader(),
+      "Content-Type": "application/json",
+    }
 
     const response = await fetch(`${API_BASE}/`, {
       method: "POST",

@@ -8,7 +8,7 @@ const getAuthHeader = () => {
 
 const fetchData = async (endpoint) => {
   try {
-    const response = await fetch(`${API_BASE}/${endpoint}/`, {
+    const response = await fetch(`${API_BASE}/${endpoint}`, {
       headers: {
         "Content-Type": "application/json",
         ...getAuthHeader(),
@@ -16,7 +16,7 @@ const fetchData = async (endpoint) => {
     });
 
     if (response.status === 401) {
-      window.location.href = "/";
+      window.location.href = "/bookIt/";
       return;
     }
 
@@ -28,10 +28,12 @@ const fetchData = async (endpoint) => {
   }
 };
 
-export const getRecommendedBooks = () => fetchData("recommended");
-export const getFastSellingBooks = () => fetchData("selling-rapidly");
-export const getTrendingBooks = () => fetchData("trending");
+export const getRecommendedBooks = () => fetchData("recommended/");
+export const getFastSellingBooks = () => fetchData("selling-rapidly/");
+export const getTrendingBooks = () => fetchData("trending/");
 export const getBookById = (id) => fetchData(id);
+export const getAllBooks = () => fetchData("");
+export const getOwnedBooks = () => fetchData("my");
 
 export const updateBook = async (id, bookData) => {
   try {
@@ -55,7 +57,7 @@ export const updateBook = async (id, bookData) => {
     });
 
     if (response.status === 401) {
-      window.location.href = "/";
+      window.location.href = "/bookIt/";
       return;
     }
 
@@ -85,7 +87,7 @@ export const checkBookOwnership = async (bookId) => {
     );
 
     if (response.status === 401) {
-      window.location.href = "/";
+      window.location.href = "/bookIt/";
       return false;
     }
 

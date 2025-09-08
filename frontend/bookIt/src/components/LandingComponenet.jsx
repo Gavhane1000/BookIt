@@ -28,7 +28,7 @@ export default function LandingComponent() {
         setLoading(false);
       } catch (error) {
         if (error.message === "Unauthorized") {
-          navigate("/", { replace: true });
+          navigate("/bookIt/", { replace: true });
         }
       }
     };

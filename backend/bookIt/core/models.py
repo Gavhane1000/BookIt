@@ -18,9 +18,8 @@ class Book(models.Model):
     genres = models.ManyToManyField(BookGenre, related_name="books")
     created_on = models.DateTimeField(auto_now_add=True)
     stored_at = models.TextField(blank=False, null=False)
-
-    # ✅ Local image storage
     cover_image = models.ImageField(upload_to="books/", null=True, blank=True)
+    pdf_file = models.FileField(upload_to="books/pdfs/", blank=True, null=True)
 
     def __str__(self):
         return self.title

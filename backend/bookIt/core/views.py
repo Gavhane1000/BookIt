@@ -5,9 +5,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.db.models import Count
 from django.utils.timezone import now, timedelta
+from django.db.models import Exists, OuterRef
 
-from .models import Book, UserAction, Order
-from .serializers import BookSerializer, BookOwnershipSerializer, OrderSerializer
+from .models import Book, UserAction, Order, User
+from .serializers import BookSerializer, BookOwnershipSerializer, OrderSerializer, BookOwnedSerializer
 
 
 # Test API
@@ -35,8 +36,17 @@ class MeView(APIView):
 
 # List all books OR create new one
 class BookListCreateView(generics.ListCreateAPIView):
-    queryset = Book.objects.all()
-    serializer_class = BookSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self, request):
+        user = request.user
+
+        # Create a subquery: does this user have an order for this book?
+        user_orders = Order.objects.filter(user=user, book=OuterRef('pk'))
+
+        books = Book.objects.annotate(owns=Exists(user_orders)).filter(owns=False)
+
+        serializer = BookOwnedSerializer(books, many=True)
+        return Response(serializer.data)
 
     def get_permissions(self):
         if self.request.method == "POST":
@@ -47,6 +57,18 @@ class BookListCreateView(generics.ListCreateAPIView):
         cover_image = self.request.FILES.get("cover_image")
         serializer.save(cover_image=cover_image)
 
+class MyBookListView(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self, request):
+        user = request.user
+
+        user_orders = Order.objects.filter(user=user, book=OuterRef('pk'))
+
+        books = Book.objects.annotate(owns=Exists(user_orders)).filter(owns=True)
+
+        serializer = BookOwnedSerializer(books, many=True)
+        return Response(serializer.data)
+  
 
 class BookDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Book.objects.all()
@@ -63,9 +85,14 @@ class BookDetailView(generics.RetrieveUpdateDestroyAPIView):
         partial = kwargs.pop("partial", False)
 
         cover_image = request.FILES.get("cover_image")
+        pdf_file = request.FILES.get("pdf_file")
+        
         if cover_image:
             instance.cover_image = cover_image
-            instance.save()
+        if pdf_file:
+            instance.pdf_file = pdf_file    
+        
+        instance.save()
 
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
@@ -80,12 +107,22 @@ class TrendingBooksView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
+        user = request.user
+        user_id = user.id
+        # Get all books the user owns (IDs)
+        owned_books = set(Order.objects.filter(user=user_id).values_list("book_id", flat=True))
+
         books = (
             Book.objects.annotate(interactions=Count("useraction"))
             .order_by("-interactions")[:4]
         )
         serializer = BookSerializer(books, many=True)
-        return Response(serializer.data)
+        
+        data = serializer.data
+        for book in data:
+            book["owns"] = book["id"] in owned_books
+            
+        return Response(data)
 
 
 # 🔥 2. Recommended Books (for logged-in user)
@@ -94,6 +131,10 @@ class RecommendedBooksView(APIView):
 
     def get(self, request):
         user = request.user
+        
+        user_id = user.id
+        # Get all books the user owns (IDs)
+        owned_books = set(Order.objects.filter(user=user_id).values_list("book_id", flat=True))
 
         user_genres = (
             UserAction.objects.filter(user=user)
@@ -111,7 +152,12 @@ class RecommendedBooksView(APIView):
         )
 
         serializer = BookSerializer(books, many=True)
-        return Response(serializer.data)
+        data = serializer.data
+        for book in data:
+            book["owns"] = book["id"] in owned_books
+            
+        return Response(data)
+
 
 
 # 🔥 3. Selling Rapidly
@@ -119,6 +165,10 @@ class SellingRapidlyBooksView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
+        user = request.user
+        user_id = user.id
+        # Get all books the user owns (IDs)
+        owned_books = set(Order.objects.filter(user=user_id).values_list("book_id", flat=True))
         last_30_days = now() - timedelta(days=30)
 
         books = (
@@ -128,7 +178,12 @@ class SellingRapidlyBooksView(APIView):
         )
 
         serializer = BookSerializer(books, many=True)
-        return Response(serializer.data)
+        data = serializer.data
+        for book in data:
+            book["owns"] = book["id"] in owned_books
+            
+        return Response(data)
+
 
 class BookOwnershipView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -148,13 +203,21 @@ class BookOwnershipView(APIView):
             )
             
 class PurchaseBookView(APIView):
-    print("hahah", APIView)
     # permission_classes = [permissions.IsAuthenticated]
-
+    
+    def get(self, request):
+        return Response({"Hi": "Book not found"}, status=status.HTTP_200_OK)
+    
     def post(self, request):
-        print(request)
-        user = request.user
+        user_id = request.data.get("user")
         book_id = request.data.get("book")
+        
+        print(request.data)
+        
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
         try:
             book = Book.objects.get(id=book_id)
@@ -167,4 +230,5 @@ class PurchaseBookView(APIView):
 
         order = Order.objects.create(user=user, book=book)
         serializer = OrderSerializer(order)
+        print(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED)

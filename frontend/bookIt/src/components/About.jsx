@@ -22,7 +22,7 @@ export default function About() {
         <div className="button mt-6">
           <button
             className="recipe-btn bg-gray-700 text-white px-6 py-3 rounded-lg shadow-md hover:bg-gray-600 transition"
-            onClick={() => navigate("/books")}
+            onClick={() => navigate("/bookIt/books")}
           >
             Explore Books
           </button>

@@ -16,7 +16,7 @@ export default function Loggin() {
 
     try {
       await login(username, password);
-      navigate("/landing");
+      navigate("/bookIt/landing");
     } catch (err) {
       setError(err.message || "Something went wrong");
     }

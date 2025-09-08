@@ -7,18 +7,18 @@ export default function Navbar() {
   const handleLogout = () => {
     localStorage.removeItem("access");
     localStorage.removeItem("refresh");
-    navigate("/", { replace: true });
+    navigate("/bookIt/", { replace: true });
   };
 
   return (
     <nav className=" bg-white shadow-md px-6 py-3 flex justify-between items-center">
-      <NavLink to="/landing" className="text-2xl font-bold text-blue-600">
+      <NavLink to="/bookIt/landing" className="text-2xl font-bold text-blue-600">
         BookIt 📚
       </NavLink>
 
       <div className="space-x-6 flex items-center">
         <NavLink
-          to="/landing"
+          to="/bookIt/landing"
           className={({ isActive }) =>
             isActive
               ? "text-blue-600 font-semibold"
@@ -29,7 +29,7 @@ export default function Navbar() {
         </NavLink>
 
         <NavLink
-          to="/books"
+          to="/bookIt/books"
           className={({ isActive }) =>
             isActive
               ? "text-blue-600 font-semibold"
@@ -40,7 +40,7 @@ export default function Navbar() {
         </NavLink>
 
         <NavLink
-          to="/profile"
+          to="/bookIt/profile"
           className={({ isActive }) =>
             isActive
               ? "text-blue-600 font-semibold"

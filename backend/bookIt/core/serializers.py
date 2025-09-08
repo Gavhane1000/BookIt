@@ -17,7 +17,17 @@ class BookSerializer(serializers.ModelSerializer):
         model = Book
         fields = [
             "id", "title", "author", "description", "price",
-            "created_on", "stored_at", "cover_image_url", "genres",
+            "created_on", "stored_at", "cover_image_url", "pdf_file","genres",
+        ]
+        
+class BookOwnedSerializer(serializers.ModelSerializer):
+    owns = serializers.BooleanField(read_only=True)
+
+    class Meta:
+        model = Book
+        fields = [
+            'id', 'title', 'author', 'description', 'price',
+            'created_on', 'stored_at', 'cover_image_url', 'genres', 'owns'
         ]
         
 class BookOwnershipSerializer(serializers.Serializer):

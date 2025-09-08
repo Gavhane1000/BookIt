@@ -8,6 +8,8 @@ import EditBook from "../components/EditBook";
 import paymentQR from "../assets/qr.png";
 import { checkBookOwnership } from "../service/BooksService";
 import { postPurchase } from "../service/OrdersService";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 export default function BookDetails() {
   const { id } = useParams();
@@ -19,6 +21,7 @@ export default function BookDetails() {
   const [ownsBook, setOwnsBook] = useState(false);
   const [isBuyOpen, setIsBuyOpen] = useState(false);
   const profile = loadProfile();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBookData = async () => {
@@ -47,15 +50,20 @@ export default function BookDetails() {
   };
 
   const handleBuy = async () => {
+    const profileStr = localStorage.getItem("profile");
+    const profile = JSON.parse(profileStr);
+
     try {
       await postPurchase({
         book: Number(id),
+        user: profile.id,
       });
-      alert("Purchase successful!");
+
+      toast.success("Purchase successful!");
       setIsBuyOpen(false);
-      setOwnsBook(true); 
+      setOwnsBook(true);
     } catch (err) {
-      alert("Failed to store purchase.");
+      toast.error("Failed to store purchase.");
     }
   };
 
@@ -70,7 +78,7 @@ export default function BookDetails() {
             Edit
           </button>
           <button
-            onClick={() => setBookOpen(true)}
+            onClick={() => navigate(`/bookIt/books/${book.id}/read`)}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition"
           >
             Read
@@ -80,7 +88,7 @@ export default function BookDetails() {
     } else {
       return ownsBook ? (
         <button
-          onClick={() => setBookOpen(true)}
+          onClick={() => navigate(`/bookIt/books/${book.id}/read`)}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition"
         >
           Read
